@@ -1,0 +1,25 @@
+{
+  "name": "planning-board",
+  "version": "1.0.0",
+  "description": "An Angular based Planning Board component with drag and drop, swim lanes, summary labels and much more.",
+  "main": "index.js",
+  "dependencies": {
+    "angular": "^1.5.7"
+  },
+  "devDependencies": {
+    "http-server": "^0.9.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HPSoftware/planning-board.git"
+  },
+  "author": "HPESoftware",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HPSoftware/planning-board/issues"
+  },
+  "homepage": "https://github.com/HPSoftware/planning-board#readme"
+}
