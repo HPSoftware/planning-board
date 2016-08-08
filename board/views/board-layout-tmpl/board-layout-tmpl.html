@@ -1,0 +1,87 @@
+<div class="gen-board" data-aid="gen-board">
+	<div data-aid="board-layout" class="select-none column-holder" ui-event="{scroll: 'scrollColumnHolder($event)'}">
+		<div class="column-container">
+			<div class="board-row header" ng-style="{'transform' : 'translateY(' + scrollTop + ')'}">
+				<div class="board-column col_{{column.value}}"
+						 ng-class="{'collapsed-column': column.isCollapsed,'fixed-column':column.width!=='auto'}"
+						 ng-style="!column.isCollapsed && {'flex-grow' : 1 , '-ms-flex-positive' : '1'}"
+						 ng-repeat="column in columns" title="{{::column.label}}">
+
+
+					<div ng-switch on="column.isCollapsed" class="height--100">
+						<div class="collapsed-header-column height--100" ng-switch-when="true">
+							<board-collapsed-header></board-collapsed-header>
+						</div>
+
+						<div class="header-widget" ng-switch-when="false">
+							<board-header expand-header-directive="{{::configuration.expandHeaderDirectiveName}}"></board-header>
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+			<div class="board-content ">
+
+				<div ng-if="dataSvc.getTotalCount() === 0" class="no-items"></div>
+
+				<div ng-if="showSwimLanes">
+
+					<div class="board-row header-row-separator" ng-repeat-start="row in rows" ng-click="collapseRow(row)">
+						<board-row-header data-aid="board-row-header" row-directive="{{::configuration.rowDirectiveName}}">
+						</board-row-header>
+					</div>
+
+					<div ng-switch on="row.isCollapsed" ng-repeat-end>
+
+						<div class="board-row" ng-switch-when="true">
+
+							<div class="collapsed"></div>
+						</div>
+
+						<div class="board-row" ng-switch-when="false">
+
+							<div class="board-column holder col_{{::column.value}}" ui-event="{scroll: 'scrollCellHolder($event)'}"
+									 ng-class="{'collapsed-column': column.isCollapsed,'fixed-column':column.width!=='auto' }"
+									 ng-repeat="column in columns">
+								<div class="column_cell" ng-if="!column.isCollapsed">
+									<board-cell data-aid="board-cell-{{::row.value}}-{{::column.value}}" class="gen-board-cell-style" resize-element="resizeEvent($event)" sortable-component
+															drag-directive-mode="drop-area"
+															drag-directive-container-style="drag-container"
+															drag-directive-dummy-style="dummy-style"
+															drag-directive-dummy-area-style="dummy-area-style"
+															drag-directive-container-over-style="drag-over"
+															drag-toggled-mode-active="true"
+															card-directive="{{::configuration.cardDirectiveName}}">
+									</board-cell>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+
+				<div ng-if="!showSwimLanes">
+					<div ng-if="!row.isCollapsed" class="board-row" ng-style="row.style">
+						<div class="board-column holder col_{{::column.value}}" ui-event="{scroll: 'scrollCellHolder($event)'}"
+								 ng-class="{'collapsed-column': column.isCollapsed,'fixed-column':column.width!=='auto' }"
+								 ng-style="!column.isCollapsed && column.style" ng-repeat="column in columns">
+							<div class="column_cell" ng-if="!column.isCollapsed">
+								<board-cell data-aid="board-cell" class="gen-board-cell-style" resize-element="resizeEvent($event)" sortable-component
+														drag-directive-mode="drop-area"
+														drag-directive-container-style="drag-container"
+														drag-directive-dummy-style="dummy-style"
+														drag-directive-dummy-area-style="dummy-area-style"
+														drag-directive-container-over-style="drag-over"
+														drag-toggled-mode-active="true"
+														card-directive="{{::configuration.cardDirectiveName}}">
+								</board-cell>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

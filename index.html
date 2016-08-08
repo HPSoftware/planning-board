@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="node_modules/lodash/lodash.min.js"></script>
+    <script src="node_modules/angular/angular.js"></script>
+
+    <script src="board/board-module.js"></script>
+    <script src="board/directives/board/board-directive.js"></script>
+    <script src="board/directives/board/board-controller.js"></script>
+    <script src="board/directives/board-cell/board-cell-directive.js"></script>
+    <script src="board/directives/board-header/board-header-directive.js"></script>
+    <script src="board/directives/board-header-collapse/board-header-collapse-directive.js"></script>
+    <script src="board/directives/board-row-header/board-row-header-directive.js"></script>
+    <script src="board/directives/sortable-component/sortable-component-directive.js"></script>
+    <script src="board/services/board-drag-service.js"></script>
+    <script src="board/services/board-filter.js"></script>
+    <script src="demo.js"></script>
+
+    <link rel="stylesheet" href="board/board.css">
+</head>
+<body>
+
+<div ng-app="planningBoardDemo" ng-controller="demoCtrl">
+    <board name="'myBoard'" layout="layout" can-move-item="canMoveMyItem(id)" move-item="moveMyItem(id)"></board>
+    <button ng-click="myBoard.refresh()">Call Refresh on board's API</button>
+</div>
+</body>
+
+</html>

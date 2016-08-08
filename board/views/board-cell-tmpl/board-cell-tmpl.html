@@ -1,0 +1,17 @@
+<!--<board-cell data-aid="board-cell" class="gen-board-cell-style" resize-element="resizeEvent($event)" sortable-component-->
+<!--drag-directive-dummy-style="d1-dummy"-->
+<!--drag-directive-container-style="d1-container"-->
+<!--drag-directive-container-over-style="d1-over"-->
+<!--&gt;</board-cell>-->
+
+<board-cell data-aid="board-cell" class="gen-board-cell-style" resize-element="resizeEvent($event)" sortable-component
+						drag-directive-mode="drop-area"
+						drag-directive-container-style="drag-container"
+						drag-directive-dummy-style="dummy-style"
+						drag-directive-dummy-area-style="dummy-area-style"
+						drag-directive-container-over-style="drag-over"
+						drag-toggled-mode-active="true">
+	<div ng-if="::configuration.addCardCellButton" class="add-card" title="{{::configuration.addCardCellButton.tooltipLabel}}" ng-click="addCard(column, row)">
+		<span class="plus-sign">+</span>
+	</div>
+</board-cell>
