@@ -21,9 +21,35 @@
 </head>
 <body>
 
-<div ng-app="planningBoardDemo" ng-controller="demoCtrl">
-    <board name="'myBoard'" layout="layout" can-move-item="canMoveMyItem(id)" move-item="moveMyItem(id)"></board>
-    <button ng-click="myBoard.refresh()">Call Refresh on board's API</button>
+<div ng-app="planningBoardDemo" ng-controller="demoCtrl as ctrl">
+    <div>
+        <h1>Planning Board Demo</h1>
+        <p>
+            <span>Choose the desired layout:</span>
+            <label ng-repeat="(name, config) in ctrl.configurations track by name">
+                <input type="radio" ng-model="ctrl.selectedConfiguration" ng-value="config"/>{{name}}
+            </label>
+        </p>
+        <p>
+            <span>Populate data:</span>
+            <button ng-disabled="true" ng-click="ctrl.populateData(0)">Data Set 1</button>
+            <button ng-disabled="true" ng-click="ctrl.populateData(1)">Data Set 2</button>
+            <button ng-disabled="true" ng-click="ctrl.clearData()">Clear Data</button>
+            <code>* data population not implemented yet *</code>
+        </p>
+        <p>
+            <span>Additional operations: </span>
+            <button ng-click="myBoard.refresh()">Call Refresh on board's API</button>
+        </p>
+    </div>
+    <div style="position: relative; height: 500px;">
+        <board
+                name="'myBoard'" layout="ctrl.selectedConfiguration.layout"
+                can-move-item="ctrl.canMoveMyItem(id)"
+                move-item="ctrl.moveMyItem(id)">
+
+        </board>
+    </div>
 </div>
 </body>
 
