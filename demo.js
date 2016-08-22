@@ -15,46 +15,44 @@
  */
 
 
-angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', function($scope) {
+angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', function() {
 	'use strict';
 
 	this.canMoveMyItem = function(id) {
 		console.log('canMoveItem ' + id);
-	}
+	};
 	this.moveMyItem = function(id) {
 		console.log('moveItem ' + id);
-	}
+	};
 
 	this.configurations = {
 		'Statuses': {
 			layout: {
-			columnDefinition: {
-				field: 'status',
-				label: 'Status',
-				values: [
-					{
-						value: 'new',
-						label: 'New'
-					},
-					{
-						value: 'open',
-						label: 'Open'
-					},
-					{
-						value: 'fixed',
-						label: 'Fixed'
-					},
-					{
-						value: 'closed',
-						label: 'Closed'
-					}
-				]
-			}
-		},
-			dataSets: [
-				{
-
+				columnDefinition: {
+					field: 'status',
+					label: 'Status',
+					values: [
+						{
+							value: 'new',
+							label: 'New'
+						},
+						{
+							value: 'open',
+							label: 'Open'
+						},
+						{
+							value: 'fixed',
+							label: 'Fixed'
+						},
+						{
+							value: 'closed',
+							label: 'Closed'
+						}
+					]
 				}
+			},
+			dataSets: [
+				{}
 			]
 
 		},
@@ -96,9 +94,7 @@ angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', f
 				}
 			},
 			dataSets: [
-				{
-
-				}
+				{}
 			]
 		}
 	};
