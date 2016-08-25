@@ -15,7 +15,7 @@
  */
 
 
-angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', function() {
+angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', function($scope) {
 	'use strict';
 
 	this.canMoveMyItem = function(id) {
@@ -98,7 +98,15 @@ angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', f
 			]
 		}
 	};
+
+	$scope.$watch('ctrl.selectedConfiguration', function() {
+
+		if ($scope.myBoard) {
+			$scope.myBoard.refreshLayout($scope.ctrl.selectedConfiguration.layout);
+		}
+	});
 	this.selectedConfiguration = this.configurations['Week Planner'];
+
 
 	/*
 	 export class BoardLayout {

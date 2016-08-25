@@ -25,10 +25,9 @@
 			restrict: 'E',
 			controller: 'genBoardCtrl',
 			scope: {
-				name: '=',
+				api: '=?name',
 				layout: '=',
 				data: '=',
-				configuration: '=',
 
 				// Function
 				canMove: '&',
@@ -199,6 +198,10 @@
 					// fill axis member to row and column
 					angular.forEach(scope.columns, function(column) {
 						column.axis = boardLayout.columnDefinition;
+
+						if (_.isUndefined(column.isCollapsed)) {
+							column.isCollapsed = false;
+						}
 					});
 
 					angular.forEach(scope.rows, function(row) {
@@ -245,28 +248,18 @@
 					}
 				}
 
-				function initInternalApi() {
-					// internal API - used by board cell
-					scope.api = {
-						refresh: refreshCards
-					};
-				}
-
 				function initApiFunctions() {
-					if (scope.configuration) {
-						scope.configuration.genBoardApi = {};
-						scope.configuration.genBoardApi.refreshCards = refreshCards;
-						scope.configuration.genBoardApi.refreshLayout = parseLayout;
-						scope.configuration.genBoardApi.getSelectedCards = getSelectedCards;
-						scope.configuration.genBoardApi.collapseRow = scope.collapseRow;
-						scope.configuration.genBoardApi.collapseAllSwimlanes = collapseAllSwimlanes;
-						scope.configuration.genBoardApi.expandAllSwimlanes = expandAllSwimlanes;
-					}
+					scope.api = {};
+					scope.api.refresh = refreshCards;
+					scope.api.refreshLayout = parseLayout;
+					scope.api.getSelectedCards = getSelectedCards;
+					scope.api.collapseRow = scope.collapseRow;
+					scope.api.collapseAllSwimlanes = collapseAllSwimlanes;
+					scope.api.expandAllSwimlanes = expandAllSwimlanes;
 				}
 
 				function init() {
 					parseLayout(scope.layout);
-					initInternalApi();
 					initApiFunctions();
 					isAllSwimlanesExpandChanged();
 				}
