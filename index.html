@@ -57,12 +57,12 @@
         </p>
         <p>
             <span>Additional operations: </span>
-            <button ng-click="myBoard.refresh()">Call Refresh on board's API</button>
+            <button ng-click="ctrl.myBoard.refresh()">Call Refresh on board's API</button>
         </p>
     </div>
     <div style="height: 500px;">
         <board
-                name="myBoard" layout="ctrl.selectedConfiguration.layout"
+                name="ctrl.myBoard" layout="ctrl.selectedConfiguration.layout"
                 can-move-item="ctrl.canMoveMyItem(id)"
                 move-item="ctrl.moveMyItem(id)">
 

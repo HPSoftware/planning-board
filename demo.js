@@ -15,14 +15,16 @@
  */
 
 
-angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', function($scope) {
+angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', function($log) {
 	'use strict';
 
+	$log.log('Welcome to Planning Board Demo');
+
 	this.canMoveMyItem = function(id) {
-		console.log('canMoveItem ' + id);
+		$log.log('canMoveItem ' + id);
 	};
 	this.moveMyItem = function(id) {
-		console.log('moveItem ' + id);
+		$log.log('moveItem ' + id);
 	};
 
 	this.configurations = {
@@ -99,12 +101,6 @@ angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', f
 		}
 	};
 
-	$scope.$watch('ctrl.selectedConfiguration', function() {
-
-		if ($scope.myBoard) {
-			$scope.myBoard.refreshLayout($scope.ctrl.selectedConfiguration.layout);
-		}
-	});
 	this.selectedConfiguration = this.configurations['Week Planner'];
 
 

@@ -178,7 +178,10 @@
 				//  }
 				//});
 
-				function parseLayout(boardLayout) {
+				scope.$watch('layout', parseLayout);
+
+				function parseLayout() {
+					var boardLayout = scope.layout;
 					scope.columns = boardLayout.columnDefinition.values;
 					scope.rows = boardLayout.laneDefinition && boardLayout.laneDefinition.values;
 					if (!scope.rows || scope.rows.length === 0 || !scope.showSwimLanes) {
@@ -251,7 +254,6 @@
 				function initApiFunctions() {
 					scope.api = {};
 					scope.api.refresh = refreshCards;
-					scope.api.refreshLayout = parseLayout;
 					scope.api.getSelectedCards = getSelectedCards;
 					scope.api.collapseRow = scope.collapseRow;
 					scope.api.collapseAllSwimlanes = collapseAllSwimlanes;
@@ -259,7 +261,6 @@
 				}
 
 				function init() {
-					parseLayout(scope.layout);
 					initApiFunctions();
 					isAllSwimlanesExpandChanged();
 				}
