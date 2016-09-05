@@ -27,6 +27,13 @@ angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', f
 		$log.log('moveItem ' + id);
 	};
 
+	this.populateData = function(index){
+		this.selectedDataSet = angular.copy(this.selectedConfiguration.dataSets[index]);
+	};
+	this.clearData = function(){
+		this.selectedDataSet = [];
+	};
+
 	this.configurations = {
 		'Statuses': {
 			layout: {
@@ -54,7 +61,10 @@ angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', f
 				}
 			},
 			dataSets: [
-				{}
+				[
+					{name:'something', status:'new'},
+					{name:'else', status:'new'}
+				]
 			]
 
 		},
@@ -96,37 +106,15 @@ angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', f
 				}
 			},
 			dataSets: [
-				{}
+				[
+					{name:'The middle of the week!', day:'wed'},
+					{name:'Vacation', day:'sun'}
+				]
 			]
 		}
 	};
 
 	this.selectedConfiguration = this.configurations['Week Planner'];
-
-
-	/*
-	 export class BoardLayout {
-	 columnDefinition:AxisDefinition;
-	 laneDefinition:AxisDefinition;
-	 }
-
-	 export class AxisDefinition {
-	 name:string;
-	 label:string;
-	 values:BoardCell[];
-	 field:string;
-	 }
-
-	 export class BoardCell {
-	 value:string;
-	 label:string;
-	 isCollapsed:boolean;
-	 customData:any;
-	 }
-
-	 */
-
-
 });
 
 
