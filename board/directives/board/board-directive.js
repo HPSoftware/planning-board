@@ -172,6 +172,13 @@
 
 				scope.$watch('layout', parseLayout);
 
+				scope.$watchCollection('data', function() {
+
+				 if (scope.data && scope.data.length > 0) {
+				   refreshCards();
+				 }
+				});
+
 				function parseLayout() {
 					var boardLayout = scope.layout;
 
