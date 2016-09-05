@@ -147,7 +147,6 @@
 				scope.sortCell = scope.configuration && scope.configuration.externalFunctions && scope.configuration.externalFunctions.sortCell;
 				scope.addCard = scope.configuration && scope.configuration.externalFunctions && scope.configuration.externalFunctions.addCard;
 				scope.isAllSwimlanesExpandChanged = scope.configuration && scope.configuration.externalFunctions && scope.configuration.externalFunctions.isAllSwimlanesExpandChanged;
-				scope.showSwimLanes = scope.configuration && scope.configuration.laneConfiguration;
 				scope.scrollCellHolder = function(e) {
 					scope.scrollData = {
 						rect: e.target.getBoundingClientRect(),
@@ -180,11 +179,13 @@
 						return;
 					}
 
+					scope.showSwimLanes = boardLayout.laneDefinition && boardLayout.laneDefinition.values.length > 0;
+
 					scope.columns = boardLayout.columnDefinition.values;
 					scope.rows = boardLayout.laneDefinition && boardLayout.laneDefinition.values;
 
 					// fill axis member to row and column
-					angular.forEach(scope.columns, function(column) {
+					angular.forEach(scope.columns, function (column) {
 						column.axis = boardLayout.columnDefinition;
 
 						if (_.isUndefined(column.isCollapsed)) {
@@ -198,11 +199,14 @@
 						scope.rows.push(emptyRowDefinition);
 						scope.row = emptyRowDefinition;
 						scope.showSwimLanes = false;
-					}  else {
-					angular.forEach(scope.rows, function(row) {
-						row.axis = boardLayout.laneDefinition;
-					});
-				}
+					} else {
+						angular.forEach(scope.rows, function (row) {
+							row.axis = boardLayout.laneDefinition;
+						});
+					}
+
+					scope.columnFieldName = boardLayout.columnDefinition.field;
+					scope.laneFieldName = boardLayout.laneDefinition ? boardLayout.laneDefinition.field : null;
 				}
 
 				function createEmptyCell() {

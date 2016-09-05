@@ -69,8 +69,8 @@
 
 				$scope.getCellFilter = function() {
 					var filter = {};
-					var columnFieldName = $scope.configuration && $scope.configuration.columnFieldName;
-					var rowFieldName = $scope.configuration && $scope.configuration.groupBy;
+					var columnFieldName = $scope.columnFieldName;
+					var rowFieldName = $scope.laneFieldName;
 					if (columnFieldName) {
 						filter[columnFieldName] = getIdParam($scope.subcolumn || $scope.column) || null;
 					}
@@ -168,10 +168,10 @@
 							} else if ('before' in data.movePosition) {
 								movePosition.idToMoveBefore = scope.cardGetter(data.movePosition.before).id;
 							}
-							scope.canMove({items: data.data.items, delta: delta, movePosition: movePosition}).then(function() {
+							scope.canMove({items: data.data.items, delta: delta, movePosition: movePosition}).then(function () {
 								//return $rootScope.asyncVoteBroadcast('cardDropped', delta);
 								return $rootScope.$broadcast('cardDropped', delta);
-							}).then(function() {
+							}).then(function () {
 								var columnFieldName = scope.column.axis.field;
 								var rowFieldName = scope.row.axis.field;
 
@@ -180,21 +180,29 @@
 								if (!updatedRow) {
 									updatedRow = {id: '-1'};
 								}
-								if (updatedColumn.id === delta[columnFieldName] && updatedRow.id === delta[rowFieldName]) {
-									return;
-								} else {
+								//if (updatedColumn.id === delta[columnFieldName] && updatedRow.id === delta[rowFieldName]) {
+								//	return;
+								//} else {
+								if (_.isObject(updatedColumn)) {
 									updatedColumn.id = delta[columnFieldName];
-									data.data.items[0][columnFieldName] = updatedColumn;
-									if (delta[rowFieldName]) {
-										updatedRow.id = delta[rowFieldName];
-										data.data.items[0][rowFieldName] = updatedRow;
-									}
-
-									if (scope.itemMoved) {
-										return scope.itemMoved({item: data.data.items[0]});
-									}
+								} else {
+									updatedColumn = delta[columnFieldName];
 								}
-							}).then(function() {
+								data.data.items[0][columnFieldName] = updatedColumn;
+								if (delta[rowFieldName]) {
+									if (_.isObject(updatedRow)) {
+										updatedRow.id = delta[rowFieldName];
+									} else {
+										updatedRow = delta[rowFieldName];
+									}
+									data.data.items[0][rowFieldName] = updatedRow;
+								}
+
+								if (scope.itemMoved) {
+									return scope.itemMoved({item: data.data.items[0]});
+								}
+
+							}).then(function () {
 								scope.api.refresh();
 							});
 						}
