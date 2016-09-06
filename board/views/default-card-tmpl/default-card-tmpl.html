@@ -14,12 +14,16 @@
 		limitations under the License.
 -->
 
+<!-- example of template for card, default card can be found in board-cell-directive.js "defaultCard" -->
 
 <div data-aid="default-card" class="item-card us" ng-class="{'selected': checkedCards.indexOf($index) != -1 }">
 	<svg class="svg-fold" width="16px" height="16px" viewBox="0 0 16 16">
 		<polygon class="us" points="0,0 16,16 0,16"/>
 	</svg>
 
-	<div>{{toString()}}</div>
+	<div>
+		<div>ID: {{card.id}}</div>
+		<div>Name: {{card.name}} </div>
+	</div>
 
 </div>

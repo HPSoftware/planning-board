@@ -22,7 +22,7 @@ angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', f
 
 	this.canMoveMyItem = function(id) {
 		$log.log('canMoveItem ' + id);
-		return $q.when();
+		return true;
 	};
 	this.moveMyItem = function(id) {
 		$log.log('moveItem ' + id);
@@ -118,7 +118,7 @@ angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', f
 	this.selectedConfiguration = this.configurations['Week Planner'];
 
 	this.configuration = {
-		cardDirectiveName: 'demo-card'
+	//	cardDirectiveName: 'demo-card'
 	};
 });
 

@@ -19,7 +19,7 @@
 	'use strict';
 
 	var module = angular.module('platform-board');
-	module.directive('boardCell', /*@ngInject*/ function($rootScope, boardDragService, $compile) {
+	module.directive('boardCell', /*@ngInject*/ function($rootScope, $q, boardDragService, $compile) {
 		return {
 			restrict: 'E',
 			controller: ['$scope', function($scope) {
@@ -103,9 +103,9 @@
 
 				if (scope.compileDirectives[cardDirectiveName] === undefined) {
 					if (cardDirectiveName === 'defaultCard') {
-						cardDirective = '<div data-aid="default-card" class="item-card us"   ng-class="{\'selected\': checkedCards.indexOf($index) != -1 }">' +
+						cardDirective = '<div data-aid="default-card" class="item-card"   ng-class="{\'selected\': checkedCards.indexOf($index) != -1 }">' +
 							'<svg class="svg-fold" width="16px" height="16px" viewBox="0 0 16 16"><polygon class="us" points="0,0 16,16 0,16" />' +
-							'</svg><div>{{toString()}}</div></div>';
+							'</svg>	<div><div>{{card.id}}</div><div>{{card.name}} </div></div>';
 					} else {
 						cardDirective = '<' + cardDirectiveName + ' card-data="card" class="board-card" board-card-id="" get-card-rank="getCardRank(card)"></' + cardDirectiveName + '>';
 					}
@@ -168,10 +168,15 @@
 							} else if ('before' in data.movePosition) {
 								movePosition.idToMoveBefore = scope.cardGetter(data.movePosition.before).id;
 							}
-							scope.canMove({items: data.data.items, delta: delta, movePosition: movePosition}).then(function () {
-								//return $rootScope.asyncVoteBroadcast('cardDropped', delta);
-								return $rootScope.$broadcast('cardDropped', delta);
-							}).then(function () {
+
+							$q.when(scope.canMove({items: data.data.items, delta: delta, movePosition: movePosition})).then(function(result) {
+
+								// in case can move is function that return boolean
+								if (result === false) {
+									return;
+								}
+
+								$rootScope.$broadcast('cardDropped', delta);
 								var columnFieldName = scope.column.axis.field;
 								var rowFieldName = scope.row.axis.field;
 
