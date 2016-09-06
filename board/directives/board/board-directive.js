@@ -173,10 +173,9 @@
 				scope.$watch('layout', parseLayout);
 
 				scope.$watchCollection('data', function() {
-
-				 if (scope.data && scope.data.length > 0) {
-				   refreshCards();
-				 }
+					if (!_.isUndefined(scope.data)) {
+						refreshCards();
+					}
 				});
 
 				function parseLayout() {
@@ -192,7 +191,7 @@
 					scope.rows = boardLayout.laneDefinition && boardLayout.laneDefinition.values;
 
 					// fill axis member to row and column
-					angular.forEach(scope.columns, function (column) {
+					angular.forEach(scope.columns, function(column) {
 						column.axis = boardLayout.columnDefinition;
 
 						if (_.isUndefined(column.isCollapsed)) {
@@ -207,7 +206,7 @@
 						scope.row = emptyRowDefinition;
 						scope.showSwimLanes = false;
 					} else {
-						angular.forEach(scope.rows, function (row) {
+						angular.forEach(scope.rows, function(row) {
 							row.axis = boardLayout.laneDefinition;
 						});
 					}
@@ -217,7 +216,7 @@
 				}
 
 				function createEmptyCell() {
-					return  {
+					return {
 						value: '-1',
 						label: '',
 						isCollapsed: false,

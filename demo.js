@@ -15,14 +15,14 @@
  */
 
 
-angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', function($log, $q) {
+angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', function($log) {
 	'use strict';
 
 	$log.log('Welcome to Planning Board Demo');
 
 	this.canMoveMyItem = function(id) {
 		$log.log('canMoveItem ' + id);
-		return $q.when();
+		return true;
 	};
 	this.moveMyItem = function(id) {
 		$log.log('moveItem ' + id);
