@@ -15,14 +15,14 @@
  */
 
 
-angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', function($log) {
+angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', function($log, $q) {
 	'use strict';
 
 	$log.log('Welcome to Planning Board Demo');
 
 	this.canMoveMyItem = function(id) {
 		$log.log('canMoveItem ' + id);
-		return true;
+		return $q.when();
 	};
 	this.moveMyItem = function(id) {
 		$log.log('moveItem ' + id);
@@ -63,8 +63,8 @@ angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', f
 			},
 			dataSets: [
 				[
-					{name:'something', status:'new'},
-					{name:'else', status:'new'}
+					{id: 1, name:'something', status:'new'},
+					{id: 2, name:'else', status:'new'}
 				]
 			]
 
@@ -108,14 +108,18 @@ angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', f
 			},
 			dataSets: [
 				[
-					{name:'The middle of the week!', day:'wed'},
-					{name:'Vacation', day:'sun'}
+					{id: 1, name:'The middle of the week!', day:'wed'},
+					{id: 2, name:'Vacation', day:'sun'}
 				]
 			]
 		}
 	};
 
 	this.selectedConfiguration = this.configurations['Week Planner'];
+
+	this.configuration = {
+		cardDirectiveName: 'demo-card'
+	};
 });
 
 

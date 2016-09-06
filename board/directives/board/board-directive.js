@@ -28,6 +28,7 @@
 				api: '=?name',
 				layout: '=',
 				data: '=',
+				configuration: '=',
 
 				// Function
 				canMove: '&',
