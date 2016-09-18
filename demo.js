@@ -118,7 +118,7 @@ angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', f
 	this.selectedConfiguration = this.configurations['Week Planner'];
 
 	this.configuration = {
-	//	cardDirectiveName: 'demo-card'
+		cardDirectiveName: 'demo-card'
 	};
 });
 

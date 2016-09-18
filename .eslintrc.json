@@ -1,7 +1,9 @@
 {
   "root": true,
   "extends": "eslint:recommended",
-  "plugins": ["angular"],
+  "plugins": [
+    "angular"
+  ],
   "env": {
     "node": false,
     "browser": true
@@ -16,7 +18,9 @@
     "d3": true,
     "SVG": true,
     "Uint8Array": true,
-    "$": true
+    "$": true,
+    "require": true,
+    "__dirname": true
   },
   "rules": {
     //excluded angular rules
@@ -38,14 +42,18 @@
     "angular/typecheck-array": 0,
     "angular/no-private-call": 0,
     "angular/angularelement": 0,
-
-
     //Angular rules - enabled
     "angular/controller-as-route": 2,
     "angular/deferred": 0,
-    "angular/di-order": [0, true],
+    "angular/di-order": [
+      0,
+      true
+    ],
     "angular/directive-name": 0,
-    "angular/component-limit": [0, 1],
+    "angular/component-limit": [
+      0,
+      1
+    ],
     "angular/document-service": 2,
     "angular/empty-controller": 0,
     "angular/file-name": 0,
@@ -65,16 +73,13 @@
     "angular/timeout-service": 2,
     "angular/typecheck-date": 2,
     "angular/typecheck-object": 2,
-    "angular/watchers-execution": [0, "$digest"],
-
+    "angular/watchers-execution": [
+      0,
+      "$digest"
+    ],
     //js rules
 
     "no-console": 2,
-
-
-
-
-
     "no-process-env": 2
 
 
@@ -96,7 +101,7 @@
 
 
 
-    
+
 
 
 
@@ -109,18 +114,5 @@
 
 
     //curently disabled
-
-
-
- 
-
-
-
-
-
-
-
-
-
   }
 }
