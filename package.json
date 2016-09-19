@@ -21,7 +21,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "lite-server",
     "less": "node_modules/.bin/lessc.cmd board/board-module.less board/board.css",
-    "bundle": "webpack"
+    "bundle": "webpack",
+    "prestart": "npm install && npm run less && npm run bundle"
   },
   "repository": {
     "type": "git",
