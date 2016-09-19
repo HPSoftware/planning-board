@@ -31,7 +31,7 @@
 					collapsedHeaderDirectiveName = 'defaultCollapsedHeader';
 					collapsedHeaderDirective = '<div data-aid="board-column-collapsed-header" class="height--100 bg--gray6 text--white">' +
 						' <div class="padding-t--micro--lg"><div ng-click="collapseColumn(column)" class="vertical-align--top collapse-column-icon text-align--center">' +
-						'<svg alm-icon name="s-panel-to-right-circle" class="svg--s vertical-align--middle"></svg></div></div></div>';
+						'<span class="collapse-circle-right-icon"></span></div></div></div>';
 				} else {
 					collapsedHeaderDirective = '<' + collapsedHeaderDirectiveName + ' data-aid="board-open-header" column-entity="column"></' + collapsedHeaderDirectiveName + '>';
 				}

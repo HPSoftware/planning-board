@@ -40,7 +40,9 @@
 
 			<div class="board-content ">
 
-				<div ng-if="dataSvc.getTotalCount() === 0" class="no-items"></div>
+				<div ng-if="columns.length === 0" class="no-items">
+					<empty-board empty-board-directive="{{::configuration.emptyBoardDirectiveName}}"></empty-board>
+				</div>
 
 				<div ng-if="showSwimLanes">
 

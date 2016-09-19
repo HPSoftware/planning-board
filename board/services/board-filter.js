@@ -43,7 +43,8 @@
 		}
 
 		function inColumn(itemColumnId, column) {
-			return itemColumnId === column.value;
+			// if column.value === -1 -> empty column, retrieving all card of specific row
+			return itemColumnId === column.value || column.value === '-1';
 		}
 
 		function inRow(itemRowId, row) {

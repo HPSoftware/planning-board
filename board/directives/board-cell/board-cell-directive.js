@@ -19,7 +19,7 @@
 	'use strict';
 
 	var module = angular.module('platform-board');
-	module.directive('boardCell', /*@ngInject*/ function($rootScope, $q, boardDragService, $compile) {
+	module.directive('boardCell', /*@ngInject*/ function($rootScope, boardDragService, $compile) {
 		return {
 			restrict: 'E',
 			controller: ['$scope', function($scope) {
@@ -71,6 +71,7 @@
 					var filter = {};
 					var columnFieldName = $scope.columnFieldName;
 					var rowFieldName = $scope.laneFieldName;
+
 					if (columnFieldName) {
 						filter[columnFieldName] = getIdParam($scope.subcolumn || $scope.column) || null;
 					}
@@ -107,7 +108,7 @@
 							'<svg class="svg-fold" width="16px" height="16px" viewBox="0 0 16 16"><polygon class="us" points="0,0 16,16 0,16" />' +
 							'</svg>	<div><div>{{card.id}}</div><div>{{card.name}} </div></div>';
 					} else {
-						cardDirective = '<' + cardDirectiveName + ' card-data="card" class="board-card" board-card-id="" get-card-rank="getCardRank(card)"></' + cardDirectiveName + '>';
+						cardDirective = '<' + cardDirectiveName + ' card-data="card" class="board-card" board-card-id="" get-card-order="getCardOrder(card)"></' + cardDirectiveName + '>';
 					}
 					var addItemTemplate = '<div ng-if="::configuration.addCardCellButton" class="add-card-line"><div class="add-card"' +
 						'title="{{::configuration.addCardCellButton.tooltipLabel}}" ng-click="addCard(column, row)">' +
@@ -122,7 +123,7 @@
 				});
 
 				scope.movePosition = null;
-				var genBoardElement = angular.element('.gen-board');
+				var genBoardElement = element.closest('.gen-board');
 				scope.dragElementContainerParent = [genBoardElement.find('.column-holder')[0], genBoardElement.find('.board-row.header')[0]];
 
 				scope.resizeEvent = function() {
@@ -136,13 +137,22 @@
 					};
 				};
 
-				scope.getCardRank = function(card) {
-					var cardIndex = _.findIndex(scope.items, { id: card.id });
-					return cardIndex + 1;
+				scope.getCardOrder = function(card) {
+					return scope.getCardOrderInLane(card, scope.row);
 				};
 
 				scope.$on('board-refresh-cards', function() {
 					scope.items = scope.getCellData(scope.column, scope.row);
+				});
+
+				scope.$on('cardDragStarted', function() {
+					var dummyElem = element.find('.drag-dummy-inside');
+					var genBoardElem = angular.element('.gen-board');
+					if (dummyElem.length > 0) {
+						genBoardElem.removeClass('drag-error');
+						var template = scope.getDummyTemplate();
+						dummyElem[0].outerHTML = template;
+					}
 				});
 
 				scope.$on('cardDragEnded', function() {
@@ -150,8 +160,56 @@
 					scope.getSelectedCards();
 				});
 
+				scope.$on('cardDragProcess', function(event, data) {
+					if (element[0].contains(data.event.target)) {
+						var delta = scope.getCellFilter();
+						scope.setDragOverCell(delta);
+					}
+				});
+
+				function isCellVisible() {
+					var cellVisible = element.is(':visible');
+					return cellVisible;
+				}
+
+				/**
+				 * sets the card move position when it is moved whithin a cell
+				 * @param data holds the card data
+				 * @param movePosition holds the position to move in case of reorder. will be empty in case we are moving cells
+				 * @returns {boolean} whether or not the card was moved. true if moved, false if stayed in the same place
+				 */
+				function setCardMovePosition(data, movePosition) {
+					var cardToMoveNextTo;
+					var otherCardToMoveNextTo;
+					var position;
+					var isMovingToDifferentLocation = false;
+					if ('after' in data.movePosition && data.movePosition.after >= 0) {
+						cardToMoveNextTo = scope.cardGetter(data.movePosition.after);
+						position = 'after';
+						if (cardToMoveNextTo && data.movePosition.after < scope.items.length) {
+							otherCardToMoveNextTo = scope.cardGetter(data.movePosition.after + 1);
+						}
+					} else if ('before' in data.movePosition) {
+						cardToMoveNextTo = scope.cardGetter(data.movePosition.before);
+						position = 'before';
+						if (data.movePosition.before > 0) {
+							otherCardToMoveNextTo = scope.cardGetter(data.movePosition.before - 1);
+						}
+					} else {
+						isMovingToDifferentLocation = true;
+					}
+					//check that the item was not dropped to the same location
+					if (cardToMoveNextTo && cardToMoveNextTo.id !== data.data.items[0].id &&
+						(!otherCardToMoveNextTo || otherCardToMoveNextTo.id !== data.data.items[0].id)) {
+						movePosition.idToMove = cardToMoveNextTo.id;
+						movePosition.position = position;
+						isMovingToDifferentLocation = true;
+					}
+					return isMovingToDifferentLocation;
+				}
+
 				scope.$on('cardDrop', function(e, data) {
-					if (data) {
+					if (data && isCellVisible()) {
 						// if there is any reason that the board will try to drag null item
 						// it occurs because drag drop defect that in rare case allowing dragging null item
 						// causing the user to see only the drop area without the card.
@@ -160,56 +218,48 @@
 							return;
 						}
 
+						var movePosition = {};
+
 						if (data.data.columnId === (scope.subcolumn || scope.column).value && data.data.rowId === scope.row.value) {
 							var delta = scope.getCellFilter();
-							var movePosition = {};
-							if ('after' in data.movePosition && data.movePosition.after >= 0) {
-								movePosition.idToMoveAfter = scope.cardGetter(data.movePosition.after).id;
-							} else if ('before' in data.movePosition) {
-								movePosition.idToMoveBefore = scope.cardGetter(data.movePosition.before).id;
-							}
+							var isCardPositionChanged = setCardMovePosition(data, movePosition);
+							if (isCardPositionChanged) {
+								scope.canMove({items: data.data.items, delta: delta, movePosition: movePosition}).then(function () {
+									//return $rootScope.asyncVoteBroadcast('cardDropped', delta);
+									return $rootScope.$broadcast('cardDropped', delta);
+								}).then(function () {
+									var columnFieldName = scope.column.axis.field;
+									var rowFieldName = scope.row.axis.field;
 
-							$q.when(scope.canMove({items: data.data.items, delta: delta, movePosition: movePosition})).then(function(result) {
-
-								// in case can move is function that return boolean
-								if (result === false) {
-									return;
-								}
-
-								$rootScope.$broadcast('cardDropped', delta);
-								var columnFieldName = scope.column.axis.field;
-								var rowFieldName = scope.row.axis.field;
-
-								var updatedColumn = _.cloneDeep(data.data.items[0][columnFieldName]);
-								var updatedRow = _.cloneDeep(data.data.items[0][rowFieldName]);
-								if (!updatedRow) {
-									updatedRow = {id: '-1'};
-								}
-								//if (updatedColumn.id === delta[columnFieldName] && updatedRow.id === delta[rowFieldName]) {
-								//	return;
-								//} else {
-								if (_.isObject(updatedColumn)) {
-									updatedColumn.id = delta[columnFieldName];
-								} else {
-									updatedColumn = delta[columnFieldName];
-								}
-								data.data.items[0][columnFieldName] = updatedColumn;
-								if (delta[rowFieldName]) {
-									if (_.isObject(updatedRow)) {
-										updatedRow.id = delta[rowFieldName];
-									} else {
-										updatedRow = delta[rowFieldName];
+									var updatedColumn = _.cloneDeep(data.data.items[0][columnFieldName]);
+									var updatedRow = _.cloneDeep(data.data.items[0][rowFieldName]);
+									if (!updatedRow) {
+										updatedRow = {id: '-1'};
 									}
-									data.data.items[0][rowFieldName] = updatedRow;
-								}
 
-								if (scope.itemMoved) {
-									return scope.itemMoved({item: data.data.items[0]});
-								}
+									if (_.isObject(updatedColumn)) {
+										updatedColumn.id = delta[columnFieldName];
+									} else {
+										updatedColumn = delta[columnFieldName];
+									}
+									data.data.items[0][columnFieldName] = updatedColumn;
+									if (delta[rowFieldName]) {
+										if (_.isObject(updatedRow)) {
+											updatedRow.id = delta[rowFieldName];
+										} else {
+											updatedRow = delta[rowFieldName];
+										}
+										data.data.items[0][rowFieldName] = updatedRow;
+									}
 
-							}).then(function () {
-								scope.api.refresh();
-							});
+									if (scope.itemMoved) {
+										return scope.itemMoved({item: data.data.items[0], movePosition: movePosition});
+									}
+									//}
+								}).then(function () {
+									scope.api.refresh();
+								});
+							}
 						}
 					}
 				});
