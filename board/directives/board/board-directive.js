@@ -29,15 +29,18 @@
 				layout: '=',
 				data: '=',
 				configuration: '=',
+				initBoardResolution: '@',
 
 				// Function
 				canMove: '&',
 				itemMoved: '&',
 				rowCollapsed: '&',
-				columnCollapsed: '&'
+				columnCollapsed: '&',
+				dragStart: '&',
+				dragProcess: '&'
 			},
 			template: require('html!./board.html'),
-			link: function(scope) {
+			link: function(scope, element) {
 				var columnHolder = null;
 				var fireAutoFit = function() {
 					$rootScope.$broadcast('autofitChangeEvent');
@@ -127,10 +130,13 @@
 					});
 				}
 
-				function expandAllSwimlanes() {
+				function expandAllSwimlanes(needToCollapsePredicate) {
+					var counter = 0;
+					var maxNumberOfExpandedSwimlane = scope.configuration.maxNumberOfExpandedSwimlane ? scope.configuration.maxNumberOfExpandedSwimlane : Number.MAX_SAFE_INTEGER;
 					_.forEach(scope.rows, function(row) {
-						if (row.isCollapsed && !_.isUndefined(row.customData) && row.customData.tasks_number > 0) {
+						if (counter < maxNumberOfExpandedSwimlane && row.isCollapsed && (!needToCollapsePredicate || (needToCollapsePredicate && needToCollapsePredicate(row)))) {
 							scope.collapseRow(row);
+							counter++;
 						}
 					});
 				}
@@ -143,6 +149,12 @@
 						cellData = scope.sortCell(cellData);
 					}
 					return cellData;
+				};
+				scope.getCardOrderInLane = function(card, row) {
+					var emptyColumn = createEmptyCell();
+					var rowData = scope.getCellData(emptyColumn, row);
+					var cardIndex = _.findIndex(rowData, { id: card.id });
+					return cardIndex + 1;
 				};
 
 				scope.sortCell = scope.configuration && scope.configuration.externalFunctions && scope.configuration.externalFunctions.sortCell;
@@ -247,10 +259,29 @@
 						return row.isCollapsed;
 					});
 					if (scope.isAllSwimlanesExpandChanged) {
-						scope.isAllSwimlanesExpandChanged(collapsedRows.length === 0);
+						var expandedRowsCount = 0;
+						if (scope.rows) {
+							expandedRowsCount = scope.rows.length - collapsedRows.length;
+						}
+						scope.isAllSwimlanesExpandChanged(collapsedRows, expandedRowsCount);
 					}
 				}
 
+				function changeCardResolution(cardResolution) {
+					if (parseInt(cardResolution) === 2) {
+						element.removeClass('small-board-card');
+						element.removeClass('tiny-board-card');
+					} else if (parseInt(cardResolution) === 1) {
+						element.addClass('small-board-card');
+						element.removeClass('tiny-board-card');
+						scope.boardZoomLevel = 'small-board-card';
+					} else if (parseInt(cardResolution) === 0) {
+						element.removeClass('small-board-card');
+						element.addClass('tiny-board-card');
+
+						scope.boardZoomLevel = 'tiny-board-card';
+					}
+				}
 				function initApiFunctions() {
 					scope.api = {};
 					scope.api.refresh = refreshCards;
@@ -258,11 +289,57 @@
 					scope.api.collapseRow = scope.collapseRow;
 					scope.api.collapseAllSwimlanes = collapseAllSwimlanes;
 					scope.api.expandAllSwimlanes = expandAllSwimlanes;
+					scope.api.changeCardResolution = changeCardResolution;
+					scope.api.isAllSwimlanesExpand = isAllSwimlanesExpandChanged;
 				}
 
+				function initZoomLevel() {
+					if (scope.initBoardResolution) {
+						scope.configuration.genBoardApi.changeCardResolution(scope.initBoardResolution);
+					}
+				}
+				function subscribeDragEvents() {
+					scope.$on('cardDragStarted', function(event, data) {
+						if (scope.dragStart) {
+							scope.dragStart(data);
+						}
+					});
+					scope.$on('cardDragProcess', function(event, data) {
+						if (scope.dragProcess) {
+							if (scope.currentCell && !_.isEqual(scope.currentCell, scope.oldCell)) {
+								var dummyElem = element.find('.drag-over .drag-dummy-inside');
+
+								if (scope.dragProcess) {
+									scope.dragProcess({data: data.dragElement, delta: scope.currentCell}).then(function () {
+										element.children().removeClass('drag-error');
+										if (dummyElem.length > 0) {
+											var template = scope.getDummyTemplate();
+											dummyElem[0].outerHTML = template;
+										}
+									}, function () {
+										element.children().addClass('drag-error');
+										if (dummyElem.length > 0) {
+											var errorTemplate = scope.getDummyErrorTemplate();
+											dummyElem[0].outerHTML = errorTemplate;
+										}
+									});
+								}
+							}
+						}
+					});
+					scope.currentCell = null;
+					scope.oldCell = null;
+					scope.setDragOverCell = function(delta) {
+						scope.oldCell = scope.currentCell;
+						scope.currentCell = delta;
+					};
+				}
 				function init() {
+					parseLayout(scope.layout);
+
 					initApiFunctions();
-					isAllSwimlanesExpandChanged();
+					initZoomLevel();
+					subscribeDragEvents();
 				}
 
 				init();

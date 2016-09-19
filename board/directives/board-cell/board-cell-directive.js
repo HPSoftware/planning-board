@@ -19,7 +19,7 @@
 	'use strict';
 
 	var module = angular.module('platform-board');
-	module.directive('boardCell', /*@ngInject*/ function($rootScope, boardDragService, $compile) {
+	module.directive('boardCell', /*@ngInject*/ function($rootScope, boardDragService, $compile, $q) {
 		return {
 			restrict: 'E',
 			controller: ['$scope', function($scope) {
@@ -224,10 +224,15 @@
 							var delta = scope.getCellFilter();
 							var isCardPositionChanged = setCardMovePosition(data, movePosition);
 							if (isCardPositionChanged) {
-								scope.canMove({items: data.data.items, delta: delta, movePosition: movePosition}).then(function () {
-									//return $rootScope.asyncVoteBroadcast('cardDropped', delta);
-									return $rootScope.$broadcast('cardDropped', delta);
-								}).then(function () {
+
+								$q.when(scope.canMove({items: data.data.items, delta: delta, movePosition: movePosition})).then(function(result) {
+
+									// in case can move is function that return boolean
+									if (result === false) {
+										return;
+									}
+
+									$rootScope.$broadcast('cardDropped', delta);
 									var columnFieldName = scope.column.axis.field;
 									var rowFieldName = scope.row.axis.field;
 
