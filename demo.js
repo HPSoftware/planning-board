@@ -124,6 +124,8 @@ angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', f
 	this.configuration = {
 		cardDirectiveName: 'demo-card'
 	};
+
+	this.populateData(0);
 });
 
 

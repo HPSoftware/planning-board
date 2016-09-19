@@ -360,7 +360,7 @@ div.item-card.def:before {
   vertical-align: top;
   flex: 1 0 320px;
   max-width: 320px;
-  min-width: 320px;
+  min-width: 100%;
 }
 .gen-board-cell-style .add-card-line {
   border-bottom: 2px solid;

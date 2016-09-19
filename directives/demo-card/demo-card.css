@@ -1,9 +1,19 @@
 .demo-card {
 
     margin: 10px;
-    padding: 10px;
     background: antiquewhite;
-    color: #b33600;
     box-shadow: 2px 2px 2px #888888;
     border: 1px solid lightsteelblue;
+    cursor: ew-resize;
+}
+.card-id {
+    float: left;
+    font-size: small;
+    color: GrayText;
+}
+.card-name {
+    font-size: medium;
+    font-family: cursive;
+    color: #b33600;
+    padding: 10px;
 }
