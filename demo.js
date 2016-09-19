@@ -108,8 +108,12 @@ angular.module('planningBoardDemo', ['platform-board']).controller('demoCtrl', f
 			},
 			dataSets: [
 				[
-					{id: 1, name:'The middle of the week!', day:'wed'},
-					{id: 2, name:'Vacation', day:'sun'}
+					{id: 1, name:'Work on model', day:'mon'},
+					{id: 2, name:'Shopping for dinner tomorrow', day:'mon'},
+					{id: 3, name:'Cooking for family dinner', day:'tue'},
+					{id: 4, name:'Paint the deck', day:'wed'},
+					{id: 5, name:'Road trip to Iowa!', day:'fri'},
+					{id: 6, name:'Vacation, resting at home', day:'sun'}
 				]
 			]
 		}
