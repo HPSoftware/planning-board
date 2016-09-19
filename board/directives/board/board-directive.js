@@ -36,7 +36,7 @@
 				rowCollapsed: '&',
 				columnCollapsed: '&'
 			},
-			template: require('html!./board-layout-tmpl.html'),
+			template: require('html!./board.html'),
 			link: function(scope) {
 				var columnHolder = null;
 				var fireAutoFit = function() {

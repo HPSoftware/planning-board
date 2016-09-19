@@ -38,7 +38,7 @@
 				$document.bind('mouseup', mouseup);
 				$document.bind('mousemove', mousemove);
 				$document.bind('contextmenu', contextmenu);
-				initDrag(data.event);
+				initDrag(data);
 
 				inDrag = true;
 			}
@@ -74,21 +74,24 @@
 		function mousemove(e) {
 			e.preventDefault();
 			updatePosition(e);
-			$rootScope.$broadcast('cardDragProcess', {event: e});
+			dragedElemData.originalEvent = e;
+			$rootScope.$broadcast('cardDragProcess', {event: e, dragElement: dragedElemData});
 			$rootScope.$digest();
 		}
 
-		function initDragSingleElement(originalElement) {
+		function initDragSingleElement(originalElement, boardZoomLevel) {
 			var draggedElement = originalElement.cloneNode(true);
 			draggedElement.removeAttribute('ng-repeat');
 			draggedElement.removeAttribute('ng-include');
-			draggedElement.classList.add('story-board');
-			draggedElement.classList.add('feature-board');
 			draggedElement.setAttribute('style', 'padding:0;margin:0;position:static;height:auto;width:auto;background:none');
+			if (boardZoomLevel) {
+				draggedElement.classList.add(boardZoomLevel);
+			}
 			return draggedElement;
 		}
 
-		function initDrag(event) {
+		function initDrag(data) {
+			var event = data.event;
 			selectedElements = [];
 			dragedElemData.items = [];
 			angular.forEach(dragItems, function(value) {
@@ -114,7 +117,7 @@
 				len = selectedElements.length;
 			}
 			if (len === 1) {
-				dragedElem = initDragSingleElement(selectedElements[0]);
+				dragedElem = initDragSingleElement(selectedElements[0], data.data.boardZoomLevel);
 				dragedElemContainer.style.width = wid + 'px';
 				dragedElemContainer.appendChild(dragedElem);
 			} else {
