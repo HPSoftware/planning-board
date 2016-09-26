@@ -182,7 +182,6 @@
 					angular.element($window).unbind('resize', fireAutoFit);
 				});
 
-
 				scope.$watch('layout', parseLayout);
 
 				scope.$watchCollection('data', function() {
@@ -194,7 +193,7 @@
 				function parseLayout() {
 					var boardLayout = scope.layout;
 
-					if (!boardLayout.columnDefinition) {
+					if (!boardLayout || !boardLayout.columnDefinition) {
 						return;
 					}
 
@@ -291,11 +290,12 @@
 					scope.api.expandAllSwimlanes = expandAllSwimlanes;
 					scope.api.changeCardResolution = changeCardResolution;
 					scope.api.isAllSwimlanesExpand = isAllSwimlanesExpandChanged;
+					scope.api.refreshLayout = parseLayout;
 				}
 
 				function initZoomLevel() {
 					if (scope.initBoardResolution) {
-						scope.configuration.genBoardApi.changeCardResolution(scope.initBoardResolution);
+						changeCardResolution(scope.initBoardResolution);
 					}
 				}
 				function subscribeDragEvents() {

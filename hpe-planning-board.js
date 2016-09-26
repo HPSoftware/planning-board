@@ -319,7 +319,6 @@
 						angular.element($window).unbind('resize', fireAutoFit);
 					});
 
-
 					scope.$watch('layout', parseLayout);
 
 					scope.$watchCollection('data', function() {
@@ -331,7 +330,7 @@
 					function parseLayout() {
 						var boardLayout = scope.layout;
 
-						if (!boardLayout.columnDefinition) {
+						if (!boardLayout || !boardLayout.columnDefinition) {
 							return;
 						}
 
@@ -428,11 +427,12 @@
 						scope.api.expandAllSwimlanes = expandAllSwimlanes;
 						scope.api.changeCardResolution = changeCardResolution;
 						scope.api.isAllSwimlanesExpand = isAllSwimlanesExpandChanged;
+						scope.api.refreshLayout = parseLayout;
 					}
 
 					function initZoomLevel() {
 						if (scope.initBoardResolution) {
-							scope.configuration.genBoardApi.changeCardResolution(scope.initBoardResolution);
+							changeCardResolution(scope.initBoardResolution);
 						}
 					}
 					function subscribeDragEvents() {
@@ -490,7 +490,7 @@
 /* 3 */
 /***/ function(module, exports) {
 
-	module.exports = "<!--\r\n\t\t(c) Copyright 2016 Hewlett Packard Enterprise Development LP\r\n\r\n\t\tLicensed under the Apache License, Version 2.0 (the \"License\");\r\n\t\tyou may not use this file except in compliance with the License.\r\n\t\tYou may obtain a copy of the License at\r\n\r\n\t\thttp://www.apache.org/licenses/LICENSE-2.0\r\n\r\n\t\tUnless required by applicable law or agreed to in writing, software\r\n\t\tdistributed under the License is distributed on an \"AS IS\" BASIS,\r\n\t\tWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\r\n\t\tSee the License for the specific language governing permissions and\r\n\t\tlimitations under the License.\r\n-->\r\n\r\n\r\n<div class=\"gen-board\" data-aid=\"gen-board\">\r\n\t<div data-aid=\"board-layout\" class=\"select-none column-holder\" ui-event=\"{scroll: 'scrollColumnHolder($event)'}\">\r\n\t\t<div class=\"column-container\">\r\n\t\t\t<div class=\"board-row header\" ng-style=\"{'transform' : 'translateY(' + scrollTop + ')'}\">\r\n\t\t\t\t<div class=\"board-column col_{{column.value}}\"\r\n\t\t\t\t\t\t ng-class=\"{'collapsed-column': column.isCollapsed,'fixed-column':column.width!=='auto'}\"\r\n\t\t\t\t\t\t ng-style=\"!column.isCollapsed && {'flex-grow' : 1 , '-ms-flex-positive' : '1'}\"\r\n\t\t\t\t\t\t ng-repeat=\"column in columns\" title=\"{{::column.label}}\">\r\n\r\n\r\n\t\t\t\t\t<div ng-switch on=\"column.isCollapsed\" class=\"height--100\">\r\n\t\t\t\t\t\t<div class=\"collapsed-header-column height--100\" ng-switch-when=\"true\">\r\n\t\t\t\t\t\t\t<board-collapsed-header></board-collapsed-header>\r\n\t\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t\t<div class=\"header-widget\" ng-switch-when=\"false\">\r\n\t\t\t\t\t\t\t<board-header expand-header-directive=\"{{::configuration.expandHeaderDirectiveName}}\"></board-header>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\r\n\t\t\t<div class=\"board-content \">\r\n\r\n\t\t\t\t<div ng-if=\"columns.length === 0\" class=\"no-items\">\r\n\t\t\t\t\t<empty-board empty-board-directive=\"{{::configuration.emptyBoardDirectiveName}}\"></empty-board>\r\n\t\t\t\t</div>\r\n\r\n\t\t\t\t<div ng-if=\"showSwimLanes\">\r\n\r\n\t\t\t\t\t<div class=\"board-row header-row-separator\" ng-repeat-start=\"row in rows\" ng-click=\"collapseRow(row)\">\r\n\t\t\t\t\t\t<board-row-header data-aid=\"board-row-header\" row-directive=\"{{::configuration.rowDirectiveName}}\">\r\n\t\t\t\t\t\t</board-row-header>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div ng-switch on=\"row.isCollapsed\" ng-repeat-end>\r\n\r\n\t\t\t\t\t\t<div class=\"board-row\" ng-switch-when=\"true\">\r\n\r\n\t\t\t\t\t\t\t<div class=\"collapsed\"></div>\r\n\t\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t\t<div class=\"board-row\" ng-switch-when=\"false\">\r\n\r\n\t\t\t\t\t\t\t<div class=\"board-column holder col_{{::column.value}}\" ui-event=\"{scroll: 'scrollCellHolder($event)'}\"\r\n\t\t\t\t\t\t\t\t\t ng-class=\"{'collapsed-column': column.isCollapsed,'fixed-column':column.width!=='auto' }\"\r\n\t\t\t\t\t\t\t\t\t ng-repeat=\"column in columns\">\r\n\t\t\t\t\t\t\t\t<div class=\"column_cell\" ng-if=\"!column.isCollapsed\">\r\n\t\t\t\t\t\t\t\t\t<board-cell data-aid=\"board-cell-{{::row.value}}-{{::column.value}}\" class=\"gen-board-cell-style\" resize-element=\"resizeEvent($event)\" sortable-component\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-directive-mode=\"drop-area\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-directive-container-style=\"drag-container\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-directive-dummy-style=\"dummy-style\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-directive-dummy-area-style=\"dummy-area-style\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-directive-container-over-style=\"drag-over\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-toggled-mode-active=\"true\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tcard-directive=\"{{::configuration.cardDirectiveName}}\">\r\n\t\t\t\t\t\t\t\t\t</board-cell>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t</div>\r\n\r\n\t\t\t\t<div ng-if=\"!showSwimLanes\">\r\n\t\t\t\t\t<div ng-if=\"!row.isCollapsed\" class=\"board-row\" ng-style=\"row.style\">\r\n\t\t\t\t\t\t<div class=\"board-column holder col_{{::column.value}}\" ui-event=\"{scroll: 'scrollCellHolder($event)'}\"\r\n\t\t\t\t\t\t\t\t ng-class=\"{'collapsed-column': column.isCollapsed,'fixed-column':column.width!=='auto' }\"\r\n\t\t\t\t\t\t\t\t ng-style=\"!column.isCollapsed && column.style\" ng-repeat=\"column in columns\">\r\n\t\t\t\t\t\t\t<div class=\"column_cell\" ng-if=\"!column.isCollapsed\">\r\n\t\t\t\t\t\t\t\t<board-cell data-aid=\"board-cell\" class=\"gen-board-cell-style\" resize-element=\"resizeEvent($event)\" sortable-component\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-directive-mode=\"drop-area\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-directive-container-style=\"drag-container\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-directive-dummy-style=\"dummy-style\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-directive-dummy-area-style=\"dummy-area-style\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-directive-container-over-style=\"drag-over\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-toggled-mode-active=\"true\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tcard-directive=\"{{::configuration.cardDirectiveName}}\">\r\n\t\t\t\t\t\t\t\t</board-cell>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n</div>\r\n";
+	module.exports = "<!--\n\t\t(c) Copyright 2016 Hewlett Packard Enterprise Development LP\n\n\t\tLicensed under the Apache License, Version 2.0 (the \"License\");\n\t\tyou may not use this file except in compliance with the License.\n\t\tYou may obtain a copy of the License at\n\n\t\thttp://www.apache.org/licenses/LICENSE-2.0\n\n\t\tUnless required by applicable law or agreed to in writing, software\n\t\tdistributed under the License is distributed on an \"AS IS\" BASIS,\n\t\tWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n\t\tSee the License for the specific language governing permissions and\n\t\tlimitations under the License.\n-->\n\n\n<div class=\"gen-board\" data-aid=\"gen-board\">\n\t<div data-aid=\"board-layout\" class=\"select-none column-holder\" ui-event=\"{scroll: 'scrollColumnHolder($event)'}\">\n\t\t<div class=\"column-container\">\n\t\t\t<div class=\"board-row header\" ng-style=\"{'transform' : 'translateY(' + scrollTop + ')'}\">\n\t\t\t\t<div class=\"board-column col_{{column.value}}\"\n\t\t\t\t\t\t ng-class=\"{'collapsed-column': column.isCollapsed,'fixed-column':column.width!=='auto'}\"\n\t\t\t\t\t\t ng-style=\"!column.isCollapsed && {'flex-grow' : 1 , '-ms-flex-positive' : '1'}\"\n\t\t\t\t\t\t ng-repeat=\"column in columns\" title=\"{{::column.label}}\">\n\n\n\t\t\t\t\t<div ng-switch on=\"column.isCollapsed\" class=\"height--100\">\n\t\t\t\t\t\t<div class=\"collapsed-header-column height--100\" ng-switch-when=\"true\">\n\t\t\t\t\t\t\t<board-collapsed-header></board-collapsed-header>\n\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t<div class=\"header-widget\" ng-switch-when=\"false\">\n\t\t\t\t\t\t\t<board-header expand-header-directive=\"{{::configuration.expandHeaderDirectiveName}}\"></board-header>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t\t<div class=\"board-content \">\n\n\t\t\t\t<div ng-if=\"columns.length === 0\" class=\"no-items\">\n\t\t\t\t\t<empty-board empty-board-directive=\"{{::configuration.emptyBoardDirectiveName}}\"></empty-board>\n\t\t\t\t</div>\n\n\t\t\t\t<div ng-if=\"showSwimLanes\">\n\n\t\t\t\t\t<div class=\"board-row header-row-separator\" ng-repeat-start=\"row in rows\" ng-click=\"collapseRow(row)\">\n\t\t\t\t\t\t<board-row-header data-aid=\"board-row-header\" row-directive=\"{{::configuration.rowDirectiveName}}\">\n\t\t\t\t\t\t</board-row-header>\n\t\t\t\t\t</div>\n\n\t\t\t\t\t<div ng-switch on=\"row.isCollapsed\" ng-repeat-end>\n\n\t\t\t\t\t\t<div class=\"board-row\" ng-switch-when=\"true\">\n\n\t\t\t\t\t\t\t<div class=\"collapsed\"></div>\n\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t<div class=\"board-row\" ng-switch-when=\"false\">\n\n\t\t\t\t\t\t\t<div class=\"board-column holder col_{{::column.value}}\" ui-event=\"{scroll: 'scrollCellHolder($event)'}\"\n\t\t\t\t\t\t\t\t\t ng-class=\"{'collapsed-column': column.isCollapsed,'fixed-column':column.width!=='auto' }\"\n\t\t\t\t\t\t\t\t\t ng-repeat=\"column in columns\">\n\t\t\t\t\t\t\t\t<div class=\"column_cell\" ng-if=\"!column.isCollapsed\">\n\t\t\t\t\t\t\t\t\t<board-cell data-aid=\"board-cell-{{::row.value}}-{{::column.value}}\" class=\"gen-board-cell-style\" resize-element=\"resizeEvent($event)\" sortable-component\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-directive-mode=\"drop-area\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-directive-container-style=\"drag-container\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-directive-dummy-style=\"dummy-style\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-directive-dummy-area-style=\"dummy-area-style\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-directive-container-over-style=\"drag-over\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-toggled-mode-active=\"true\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tcard-directive=\"{{::configuration.cardDirectiveName}}\">\n\t\t\t\t\t\t\t\t\t</board-cell>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\n\t\t\t\t</div>\n\n\t\t\t\t<div ng-if=\"!showSwimLanes\">\n\t\t\t\t\t<div ng-if=\"!row.isCollapsed\" class=\"board-row\" ng-style=\"row.style\">\n\t\t\t\t\t\t<div class=\"board-column holder col_{{::column.value}}\" ui-event=\"{scroll: 'scrollCellHolder($event)'}\"\n\t\t\t\t\t\t\t\t ng-class=\"{'collapsed-column': column.isCollapsed,'fixed-column':column.width!=='auto' }\"\n\t\t\t\t\t\t\t\t ng-style=\"!column.isCollapsed && column.style\" ng-repeat=\"column in columns\">\n\t\t\t\t\t\t\t<div class=\"column_cell\" ng-if=\"!column.isCollapsed\">\n\t\t\t\t\t\t\t\t<board-cell data-aid=\"board-cell\" class=\"gen-board-cell-style\" resize-element=\"resizeEvent($event)\" sortable-component\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-directive-mode=\"drop-area\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-directive-container-style=\"drag-container\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-directive-dummy-style=\"dummy-style\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-directive-dummy-area-style=\"dummy-area-style\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-directive-container-over-style=\"drag-over\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tdrag-toggled-mode-active=\"true\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tcard-directive=\"{{::configuration.cardDirectiveName}}\">\n\t\t\t\t\t\t\t\t</board-cell>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n</div>\n";
 
 /***/ },
 /* 4 */
@@ -769,7 +769,11 @@
 								var isCardPositionChanged = setCardMovePosition(data, movePosition);
 								if (isCardPositionChanged) {
 
-									$q.when(scope.canMove({items: data.data.items, delta: delta, movePosition: movePosition})).then(function(result) {
+									$q.when(scope.canMove({
+										items: data.data.items,
+										delta: delta,
+										movePosition: movePosition
+									})).then(function (result) {
 
 										// in case can move is function that return boolean
 										if (result === false) {
@@ -801,12 +805,12 @@
 											data.data.items[0][rowFieldName] = updatedRow;
 										}
 
+										scope.api.refresh();
+
 										if (scope.itemMoved) {
 											return scope.itemMoved({item: data.data.items[0], movePosition: movePosition});
 										}
 										//}
-									}).then(function () {
-										scope.api.refresh();
 									});
 								}
 							}

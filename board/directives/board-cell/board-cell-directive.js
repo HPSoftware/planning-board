@@ -225,7 +225,11 @@
 							var isCardPositionChanged = setCardMovePosition(data, movePosition);
 							if (isCardPositionChanged) {
 
-								$q.when(scope.canMove({items: data.data.items, delta: delta, movePosition: movePosition})).then(function(result) {
+								$q.when(scope.canMove({
+									items: data.data.items,
+									delta: delta,
+									movePosition: movePosition
+								})).then(function (result) {
 
 									// in case can move is function that return boolean
 									if (result === false) {
@@ -257,12 +261,12 @@
 										data.data.items[0][rowFieldName] = updatedRow;
 									}
 
+									scope.api.refresh();
+
 									if (scope.itemMoved) {
 										return scope.itemMoved({item: data.data.items[0], movePosition: movePosition});
 									}
 									//}
-								}).then(function () {
-									scope.api.refresh();
 								});
 							}
 						}
