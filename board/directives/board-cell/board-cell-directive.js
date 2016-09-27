@@ -97,7 +97,7 @@
 			scope: true,
 			link: function(scope, element, attr) {
 				var cardDirectiveName = attr['cardDirective'];
-				var cardDirective;
+				var cardDirective, isDragInsideCell = false;
 				if (!angular.isDefined(cardDirectiveName) || cardDirectiveName === '') {
 					cardDirectiveName = 'defaultCard';
 				}
@@ -142,7 +142,9 @@
 				};
 
 				scope.$on('board-refresh-cards', function() {
-					scope.items = scope.getCellData(scope.column, scope.row);
+					if (!isDragInsideCell) {
+						scope.items = scope.getCellData(scope.column, scope.row);
+					}
 				});
 
 				scope.$on('cardDragStarted', function() {
@@ -208,6 +210,24 @@
 					return isMovingToDifferentLocation;
 				}
 
+				function moveCardToNewPosition(data) {
+					var indexToRemove = _.findIndex(scope.items, function(cellItem) {
+						return cellItem.id === data.data.items[0].id;
+					});
+					if (indexToRemove > -1) {
+						scope.items.splice(indexToRemove, 1);
+					}
+					var indexToInsert;
+					if (data.movePosition.before >= 0) {
+						indexToInsert = data.movePosition.before - (indexToRemove > data.movePosition.before ? 0 : 1);
+						indexToInsert = indexToInsert >= 0 ? indexToInsert : 0;
+					} else if (data.movePosition.after >= 0) {
+						indexToInsert = data.movePosition.after + 1;
+						indexToInsert = indexToInsert < scope.items.length ? indexToInsert : scope.items.length;
+					}
+					scope.items.splice(indexToInsert, 0, data.data.items[0]);
+				}
+
 				scope.$on('cardDrop', function(e, data) {
 					if (data && isCellVisible()) {
 						// if there is any reason that the board will try to drag null item
@@ -261,12 +281,21 @@
 										data.data.items[0][rowFieldName] = updatedRow;
 									}
 
+									// dragged to same cell
+									if (!_.isEmpty(data.movePosition)) {
+										isDragInsideCell = true;
+										moveCardToNewPosition(data);
+									}
+
+									// Client refresh
 									scope.api.refresh();
 
+									// External logic
 									if (scope.itemMoved) {
 										return scope.itemMoved({item: data.data.items[0], movePosition: movePosition});
 									}
-									//}
+								}).finally(function() {
+									isDragInsideCell = false;
 								});
 							}
 						}
